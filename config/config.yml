@@ -1,0 +1,58 @@
+# ==================================================
+#  _  ___   _ ____  _____ ____   ___ _____
+# | |/ / | | |  _ \| ____| __ ) / _ \_   _|
+# | ' /| | | | |_) |  _| |  _ \| | | || |
+# | . \| |_| |  _ <| |___| |_) | |_| || |
+# |_|\_\\___/|_| \_\_____|____/ \___/ |_|
+#
+#              K U R E B O T
+#        WhatsApp Bot Configuration
+#
+# KureBot adalah bot WhatsApp multi-fungsi yang
+# dirancang untuk kebutuhan komunitas, utilitas,
+# downloader media, dan berbagai fitur otomatisasi.
+#
+# Ubah file ini menjadi config.yml sebelum menjalankan bot.
+#
+# ==================================================
+
+# ==================================================
+# Language Configuration
+# Available languages: id-ID (Bahasa Indonesia)
+# ==================================================
+
+language: "id-ID"
+
+# ==================================================
+# Database Configuration
+# Supported drivers: mysql
+# ==================================================
+
+database:
+  type: "mysql"
+
+mysql_store:
+  host: "kurebot.my.id"
+  port: 3306
+  database: "kurebotm_kurebot_zapo_dev"
+  username: "kurebotm_erwanscraft"
+  password: "Calon.admin1"
+  timezone: "+07:00"
+  pool:
+    connection_limit: 10
+
+mysql_data:
+  host: "localhost"
+  port: 3306
+  database: "database_name"
+  username: "database_user"
+  password: "database_password"
+  timezone: "+07:00"
+  pool:
+    connection_limit: 10
+
+# ==================================================
+# Versi Konfigurasi (Jangan Diubah)
+# ==================================================
+
+config: "0.0.1"

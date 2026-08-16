@@ -1,0 +1,12 @@
+# ============================================================
+# FILE KONFIGURASI BAHASA INDONESIA (id-ID.yml)
+# ============================================================
+# Panduan Penggunaan:
+# 1. Hanya ubah teks di sebelah kanan tanda titik dua (:)
+# 2. JANGAN ubah teks di sebelah kiri tanda titik dua (key)
+# 3. JANGAN ubah struktur indentasi (spasi di awal baris)
+# 4. Untuk placeholder, gunakan format {nama_variabel}
+# 5. Contoh: "Halo {nama}" -> akan diganti otomatis oleh sistem
+# 6. Untuk new line, gunakan \n atau tulis dalam beberapa baris
+# 7. Simpan file dengan encoding UTF-8
+# ============================================================

@@ -1,0 +1,40 @@
+{
+    "name": "kurebot-zapo",
+    "version": "0.0.1",
+    "description": "Framework Whatsapp Bot dengan Whatsapp API ZAPO.",
+    "keywords": [
+        "whatsapp",
+        "botwa",
+        "zapo"
+    ],
+    "homepage": "https://github.com/ErwanScraft/kurebot-zapo#readme",
+    "bugs": {
+        "url": "https://github.com/ErwanScraft/kurebot-zapo/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ErwanScraft/kurebot-zapo.git"
+    },
+    "license": "Apache-2.0",
+    "author": "ErwanScraft",
+    "type": "module",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "imports": {
+        "#bootstrap": "./src/whatsapp/bootstrap/index.js",
+        "#app": "./src/whatsapp/app/index.js",
+        "#utils/*": "./src/utils/*/index.js"
+    },
+    "dependencies": {
+        "@zapo-js/store-mysql": "^1.1.0",
+        "cfonts": "^3.3.1",
+        "chalk": "^6.0.0",
+        "fs": "^0.0.1-security",
+        "mysql2": "^3.23.2",
+        "pino": "^9.14.0",
+        "yaml": "^2.9.0",
+        "zapo-js": "^1.7.0"
+    }
+}
