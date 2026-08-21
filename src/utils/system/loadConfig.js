@@ -1,30 +1,30 @@
 // src/utils/system/loadConfig.js
 
-import fs from "fs";
-import path from "path";
-import YAML from "yaml";
-import { fileURLToPath } from "url";
+import fs from 'node:fs';
+import path from 'node:path';
+import YAML from 'yaml';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const CONFIG_DIR = path.resolve(__dirname, "../../../config");
+const CONFIG_DIR = path.resolve(__dirname, '../../../config');
+const CONFIG_FILE = path.join(CONFIG_DIR, 'config.yml');
+const EXAMPLE_FILE = path.join(CONFIG_DIR, 'config.example.yml');
 
-const CONFIG_FILE = path.join(CONFIG_DIR, "config.yml");
-const EXAMPLE_FILE = path.join(CONFIG_DIR, "config.example.yml");
+function loadYaml(file) {
+    return YAML.parse(fs.readFileSync(file, 'utf8'));
+}
 
-const loadYaml = (file) =>
-    YAML.parse(fs.readFileSync(file, "utf8"));
+function saveYaml(file, data) {
+    fs.writeFileSync(file, YAML.stringify(data), 'utf8');
+}
 
-const saveYaml = (file, data) =>
-    fs.writeFileSync(file, YAML.stringify(data), "utf8");
+function isObject(value) {
+    return value && typeof value === 'object' && !Array.isArray(value);
+}
 
-const isObject = (value) =>
-    value &&
-    typeof value === "object" &&
-    !Array.isArray(value);
-
-function mergeConfig(source, target, changes = [], prefix = "") {
+function mergeConfig(source, target, changes = [], prefix = '') {
     for (const [key, value] of Object.entries(source)) {
         const current = prefix ? `${prefix}.${key}` : key;
 
@@ -42,91 +42,101 @@ function mergeConfig(source, target, changes = [], prefix = "") {
     return changes;
 }
 
-// Pastikan template tersedia
-if (!fs.existsSync(EXAMPLE_FILE)) {
-    throw new Error("config.example.yml tidak ditemukan.");
+function ensureConfig() {
+    if (!fs.existsSync(EXAMPLE_FILE)) {
+        throw new Error('config.example.yml tidak ditemukan.');
+    }
+
+    if (!fs.existsSync(CONFIG_FILE)) {
+        fs.copyFileSync(EXAMPLE_FILE, CONFIG_FILE);
+
+        console.log(
+            '\n═══════════════════════════════════════════════════════\n' +
+            '✔ config.yml berhasil dibuat.\n\n' +
+            'Silakan edit file config/config.yml\n' +
+            'lalu jalankan kembali bot.\n' +
+            '═══════════════════════════════════════════════════════'
+        );
+
+        return false;
+    }
+
+    return true;
 }
 
-// Jika config.yml belum ada, buat dari template
-if (!fs.existsSync(CONFIG_FILE)) {
-    fs.copyFileSync(EXAMPLE_FILE, CONFIG_FILE);
+export function loadConfig() {
+    if (!ensureConfig()) {
+        process.exit(0);
+    }
 
-    let text = "";
+    const example = loadYaml(EXAMPLE_FILE);
+    const config = loadYaml(CONFIG_FILE);
 
-    text += "\n═══════════════════════════════════════════════════════\n";
-    text += "✔ config.yml berhasil dibuat.\n\n";
-    text += "Silakan edit file config/config.yml\n";
-    text += "lalu jalankan kembali bot.\n";
-    text += "═══════════════════════════════════════════════════════";
+    const changes = mergeConfig(example, config);
 
-    console.log(text);
+    let versionUpdated = false;
 
-    process.exit(0);
-}
+    if (config.config !== example.config) {
+        config.config = example.config;
+        versionUpdated = true;
+    }
 
-const example = loadYaml(EXAMPLE_FILE);
-const config = loadYaml(CONFIG_FILE);
+    if (changes.length || versionUpdated) {
+        saveYaml(CONFIG_FILE, config);
 
-// Auto merge
-const changes = mergeConfig(example, config);
+        let text =
+            '\n═══════════════════════════════════════════════════════\n' +
+            '🔄 Konfigurasi diperbarui otomatis.\n\n';
 
-// Sinkronkan versi config
-let versionUpdated = false;
+        if (changes.length) {
+            text += 'Field baru yang ditambahkan:\n';
 
-if (config.config !== example.config) {
-    config.config = example.config;
-    versionUpdated = true;
-}
+            for (const field of changes) {
+                text += `  + ${field}\n`;
+            }
 
-if (changes.length || versionUpdated) {
-    saveYaml(CONFIG_FILE, config);
-
-    let text = "";
-
-    text += "\n═══════════════════════════════════════════════════════\n";
-    text += "🔄 Konfigurasi diperbarui otomatis.\n\n";
-
-    if (changes.length) {
-        text += "Field baru yang ditambahkan:\n";
-
-        for (const field of changes) {
-            text += `  + ${field}\n`;
+            text += '\n';
+        } else {
+            text += 'Tidak ada field baru.\n\n';
         }
 
-        text += "\n";
-    } else {
-        text += "Tidak ada field baru.\n\n";
+        if (versionUpdated) {
+            text += `Versi config diperbarui ke: ${example.config}\n\n`;
+        }
+
+        text +=
+            'config.yml telah diperbarui.\n' +
+            '═══════════════════════════════════════════════════════';
+
+        console.log(text);
     }
 
-    if (versionUpdated) {
-        text += `Versi config diperbarui ke: ${example.config}\n\n`;
-    }
-
-    text += "config.yml telah diperbarui.\n";
-    text += "═══════════════════════════════════════════════════════";
-
-    console.log(text);
-}
-
-const language = loadYaml(
-    path.join(
+    const languageFile = path.join(
         CONFIG_DIR,
-        "language",
+        'language',
         `${config.language}.yml`
-    )
-);
+    );
 
-Object.assign(globalThis, {
-    database: config.database,
-    mysql_store: config.mysql_store,
-    mysql_data: config.mysql_data,
-    email: config.email,
-    owner: config.owner,
-    users: config.users,
-    bot: config.bot,
-    price: config.price,
-    sticker: config.sticker,
-    lang: language
-});
+    if (!fs.existsSync(languageFile)) {
+        throw new Error(
+            `File bahasa tidak ditemukan: ${languageFile}`
+        );
+    }
 
-export const loadConfig = () => config;
+    const language = loadYaml(languageFile);
+
+    Object.assign(globalThis, {
+        database: config.database,
+        mysql_store: config.mysql_store,
+        mysql_data: config.mysql_data,
+        email: config.email,
+        owner: config.owner,
+        users: config.users,
+        bot: config.bot,
+        price: config.price,
+        sticker: config.sticker,
+        lang: language
+    });
+
+    return config;
+}

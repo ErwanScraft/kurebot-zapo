@@ -1,5 +1,7 @@
 # Abaikan Folder
+node_modules
 logs
 
 # Abaikan File
+config/config.yml
 package-lock.json

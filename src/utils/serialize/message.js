@@ -19,7 +19,10 @@ export function message(event) {
         // Chat
         chat: key.remoteJid,
         chat2: key.remoteJidAlt,
-        sender: key.participant ?? attrs.participant ?? attrs.from ?? remoteJid,
+        sender: key.participant
+    ?? attrs.participant
+    ?? attrs.from
+    ?? key.remoteJid,
 
         // Status
         isMe: key.fromMe,
@@ -37,17 +40,16 @@ export function message(event) {
         timestamp: event.timestampSeconds,
         
         // Pesan
-        fullText = extractText(event.message); // "Contoh Output Pesan"
-        prefix = ".";
-        command = fullText.startsWith(prefix) ? fullText.split(" ")[0] : ""; // .command 
-        text = fullText.startsWith(prefix) ? fullText.slice(command.length).trim() : fullText; // "teks setelah command"
-        words = text.split(/\s+/); // ["teks", "setelah", "command"]
+        fullText: extractText(event.message),
+        prefix: ".",
+        command: fullText.startsWith(prefix) ? fullText.split(" ")[0] : "",
+        text: fullText.startsWith(prefix) ? fullText.slice(command.length).trim() : fullText,
+        words: text.split(/\s+/),
 
         // Isi pesan
         message: event.message,
         type: event.stanzaType,
 
-        // Raw bila sewaktu-waktu dibutuhkan
         raw: event
     };
 }

@@ -11,7 +11,9 @@ import registerPairing from './pairing.js'
 
 export default async function bootstrap() {
     const useQr = process.argv.includes('--qr')
-
+    
+    loadConfig()
+    
     banner()
     
     systemInfo({
@@ -34,7 +36,6 @@ export default async function bootstrap() {
             registerPairing(client)
         }
         
-        loadConfig()
         initSend(client)
         
         await client.connect()

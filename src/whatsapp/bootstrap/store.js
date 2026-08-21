@@ -14,7 +14,7 @@ export default function createAppStore() {
                 pool: {
                     host: mysql_store.host,
                     port: mysql_store.port,
-                    user: mysql_store.user,
+                    user: mysql_store.username,
                     password: mysql_store.password,
                     database: mysql_store.database
                 }
