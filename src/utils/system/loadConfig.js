@@ -129,6 +129,7 @@ export function loadConfig() {
         database: config.database,
         mysql_store: config.mysql_store,
         mysql_data: config.mysql_data,
+        client: config.client,
         email: config.email,
         owner: config.owner,
         users: config.users,

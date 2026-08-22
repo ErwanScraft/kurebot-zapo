@@ -1,17 +1,34 @@
 export function message(event) {
     const key = event.key ?? {};
     const attrs = event.rawNode?.attrs ?? {};
-    
+
     function extractText(message) {
-        if (!message) return undefined
+        if (!message) return "";
+
         return (
             message.conversation ??
             message.extendedTextMessage?.text ??
             message.imageMessage?.caption ??
             message.videoMessage?.caption ??
-            undefined
-        )
+            ""
+        );
     }
+
+    const fullText = extractText(event.message);
+    const prefix = ".";
+    const hasPrefix = fullText.startsWith(prefix);
+
+    const command = hasPrefix
+        ? fullText.split(/\s+/)[0]
+        : "";
+
+    const text = hasPrefix
+        ? fullText.slice(command.length).trim()
+        : fullText;
+
+    const words = text
+        ? text.split(/\s+/)
+        : [];
 
     return {
         id: key.id,
@@ -19,17 +36,19 @@ export function message(event) {
         // Chat
         chat: key.remoteJid,
         chat2: key.remoteJidAlt,
-        sender: key.participant
-    ?? attrs.participant
-    ?? attrs.from
-    ?? key.remoteJid,
+
+        sender:
+            key.participant ??
+            attrs.participant ??
+            attrs.from ??
+            key.remoteJid,
 
         // Status
-        isMe: key.fromMe,
-        isGroup: key.isGroup,
-        isPrivate: !key.isGroup,
-        isBroadcast: key.isBroadcast,
-        isNewsletter: key.isNewsletter,
+        isMe: key.fromMe ?? false,
+        isGroup: key.isGroup ?? false,
+        isPrivate: !(key.isGroup ?? false),
+        isBroadcast: key.isBroadcast ?? false,
+        isNewsletter: key.isNewsletter ?? false,
 
         // Informasi user
         pushName: event.pushName ?? attrs.notify ?? "",
@@ -38,13 +57,13 @@ export function message(event) {
 
         // Waktu
         timestamp: event.timestampSeconds,
-        
+
         // Pesan
-        fullText: extractText(event.message),
-        prefix: ".",
-        command: fullText.startsWith(prefix) ? fullText.split(" ")[0] : "",
-        text: fullText.startsWith(prefix) ? fullText.slice(command.length).trim() : fullText,
-        words: text.split(/\s+/),
+        fullText,
+        prefix,
+        command,
+        text,
+        words,
 
         // Isi pesan
         message: event.message,

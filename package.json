@@ -28,13 +28,15 @@
         "#utils/*": "./src/utils/*/index.js"
     },
     "dependencies": {
-        "@zapo-js/store-mysql": "^1.1.0",
+        "@zapo-js/store-mysql": "^1.2.0",
+        "@zapo-js/store-sqlite": "^1.2.0",
         "cfonts": "^3.3.1",
         "chalk": "^6.0.0",
         "fs": "^0.0.1-security",
         "mysql2": "^3.23.2",
         "pino": "^9.14.0",
+        "ws": "^8.21.3",
         "yaml": "^2.9.0",
-        "zapo-js": "^1.7.0"
+        "zapo-js": "^1.8.0"
     }
 }

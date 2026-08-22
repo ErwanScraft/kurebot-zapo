@@ -47,7 +47,7 @@ export default function registerEvents(client, { useQr }) {
                 break
         
             case 'open':
-                logger.success('Connection opened.');
+                logger.success('Client ready.');
                 break
         
             case 'close':

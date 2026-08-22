@@ -39,8 +39,7 @@ export default async function bootstrap() {
         initSend(client)
         
         await client.connect()
-    
-        logger.success('Client ready.');
+        
     } catch (err) {
         logger.error('Terjadi kesalahan:');
         console.error(err)

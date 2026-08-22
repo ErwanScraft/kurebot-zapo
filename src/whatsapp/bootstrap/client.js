@@ -21,7 +21,7 @@ export default function createClient(store) {
             }
         },
         pino({
-            level: 'silent'
+            level: client.pino.level
         })
     )
 }
