@@ -22,5 +22,16 @@ export const send = {
             linkPreview: true,
             ...options
         });
-    }
+    },
+    
+    sticker(jid, media, options = {}) {
+        if (!client) throw new Error("Sender belum diinisialisasi.");
+    
+        return client.message.send(jid, {
+            type: "sticker",
+            media,
+            mimetype: "image/webp",
+            ...options
+        });
+    },
 };

@@ -13,6 +13,17 @@ export function message(event) {
             ""
         );
     }
+    
+    function extractQuoted(message) {
+        if (!message) return null;
+    
+        return (
+            message.extendedTextMessage?.contextInfo?.quotedMessage ??
+            message.imageMessage?.contextInfo?.quotedMessage ??
+            message.videoMessage?.contextInfo?.quotedMessage ??
+            null
+        );
+    }
 
     const fullText = extractText(event.message);
     const prefix = ".";
@@ -29,6 +40,8 @@ export function message(event) {
     const words = text
         ? text.split(/\s+/)
         : [];
+        
+    const quoted = extractQuoted(event.message);
 
     return {
         id: key.id,
@@ -64,6 +77,9 @@ export function message(event) {
         command,
         text,
         words,
+        
+        // Quoted
+        quoted,
 
         // Isi pesan
         message: event.message,

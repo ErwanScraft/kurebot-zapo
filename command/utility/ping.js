@@ -25,7 +25,7 @@ export default {
 
     async run({ main, m, send }) {
         try {
-            return send.text(m.chat, "Pong!");
+            return send.linkPreview(m.chat, "https://chat.whatsapp.com/JqKVTtGxwOx79RyJyULCh0?s=cl&p=a&ilr=0\nPong!");
         } catch (error) {
             console.error(error);
         }

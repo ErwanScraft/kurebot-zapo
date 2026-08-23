@@ -5,6 +5,7 @@
  */
 
 import cfonts from 'cfonts'
+import { logger } from "#utils/terminal";
 
 export default function banner() {
     console.clear()
@@ -33,7 +34,7 @@ export default function banner() {
         colors: ['cyan']
     })
 
-    console.log('─'.repeat(54))
+    logger.line(54)
 }
 
 // Directory: src/whatsapp/bootstrap/banner.js

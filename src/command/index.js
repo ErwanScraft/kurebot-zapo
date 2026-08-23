@@ -6,12 +6,9 @@ import {
     getCommands
 } from "./registry.js";
 import { executeRegisteredCommand } from "./executor.js";
+import { logger } from "#utils/terminal";
 
 let initialized = false;
-
-export {
-    executeRegisteredCommand
-};
 
 export async function initializeCommands() {
     if (initialized) {
@@ -30,8 +27,20 @@ export async function initializeCommands() {
 
     initialized = true;
 
+    const registeredCommands = getCommands();
+
+    logger.success(
+        `${registeredCommands.length} commands initialized`
+    );
+
     return {
-        commands: getCommands(),
+        commands: registeredCommands,
         results
     };
 }
+
+export {
+    executeRegisteredCommand
+};
+
+export { parseOptions } from "./options.js"
