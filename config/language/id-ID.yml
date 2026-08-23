@@ -10,3 +10,5 @@
 # 6. Untuk new line, gunakan \n atau tulis dalam beberapa baris
 # 7. Simpan file dengan encoding UTF-8
 # ============================================================
+description:
+  ping: "TES"

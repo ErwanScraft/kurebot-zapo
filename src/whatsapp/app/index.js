@@ -3,10 +3,12 @@ import { detectConversationStarter } from "#utils/message";
 import { message, send } from "#utils/serialize";
 import { systemLogger } from "#utils/system";
 import { antiSpam } from "#utils/guard";
+import {
+    executeRegisteredCommand
+} from "../../command/index.js";
 
 export async function prosesMessage(client, event) {
     try {
-        console.log(event)
     
         const m = await message(event);
 
@@ -51,10 +53,30 @@ export async function prosesMessage(client, event) {
             console.log(`  ${chalk.gray("└─")} ${chalk.white(m.text || "")}`);
         }
         
-        await antiSpam(m);
+        const guard = antiSpam(m);
+
+        if (guard.blocked || guard.spam) {
+            if (guard.message) {
+                await send.text(m.chat, guard.message);
+            }
+        
+            return;
+        }
+        
+        if (m.command) {
+            const executed = await executeRegisteredCommand(m.command, {
+                main: client,
+                m,
+                send
+            });
+        
+            if (executed) {
+                return;
+            }
+        }
         
         // Sapaan
-        const sapa = await detectConversationStarter(m.text);
+        const sapa = detectConversationStarter(m);
         
         if (!m.isGroup && sapa.status) {
             await send.text(m.chat, `Halo ${m.pushName}, Ada yang bisa dibantu?`)

@@ -1,47 +1,36 @@
 import { logger } from "#utils/terminal";
 import { loadConfig } from "#utils/system";
-import { initSend } from "#utils/serialize";
 
-import banner from './banner.js'
-import systemInfo from './system.js'
-import createAppStore from './store.js'
-import createClient from './client.js'
-import registerEvents from './events.js'
-import registerPairing from './pairing.js'
+import banner from "./banner.js";
+import systemInfo from "./system.js";
+import initialize from "./initialize.js";
+
 
 export default async function bootstrap() {
-    const useQr = process.argv.includes('--qr')
-    
-    loadConfig()
-    
-    banner()
-    
+    const useQr = process.argv.includes("--qr");
+
+    loadConfig();
+
+    banner();
+
     systemInfo({
-        session: 'default',
-        database: 'MySQL',
+        session: "default",
+        database: "MySQL",
         historySync: true,
         useQr
-    })
-
-    const store = createAppStore()
-    
-    const client = createClient(store)
-
-    registerEvents(client, { useQr })
+    });
 
     try {
-        logger.info('Connecting to WhatsApp...');
-    
-        if (!useQr) {
-            registerPairing(client)
-        }
-        
-        initSend(client)
-        
-        await client.connect()
-        
+        logger.info("Connecting to WhatsApp...");
+
+        const { client } = await initialize({
+            useQr
+        });
+
+        await client.connect();
+
     } catch (err) {
-        logger.error('Terjadi kesalahan:');
-        console.error(err)
+        logger.error("Terjadi kesalahan:");
+        console.error(err);
     }
 }
