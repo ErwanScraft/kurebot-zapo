@@ -64,7 +64,7 @@ function ensureConfig() {
     return true;
 }
 
-export function loadConfig() {
+export async function loadConfig() {
     if (!ensureConfig()) {
         process.exit(0);
     }

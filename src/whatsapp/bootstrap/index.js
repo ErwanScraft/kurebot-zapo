@@ -9,7 +9,7 @@ import initialize from "./initialize.js";
 export default async function bootstrap() {
     const useQr = process.argv.includes("--qr");
 
-    loadConfig();
+    await loadConfig();
 
     banner();
 

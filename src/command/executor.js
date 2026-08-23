@@ -1,4 +1,4 @@
-export async function executeCommand(command, context) {
+export async function executeRegisteredCommand(command, context) {
     if (!command?.run) {
         return false;
     }

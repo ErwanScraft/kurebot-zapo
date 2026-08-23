@@ -9,6 +9,7 @@
  * Available Levels:
  * - info    : Informasi umum (putih)
  * - success : Operasi berhasil (hijau)
+ * - init    : Proses inisialisasi (putih)
  * - warn    : Peringatan (kuning)
  * - error   : Kesalahan (merah)
  * - line    : Garis pemisah (abu-abu)
@@ -25,6 +26,10 @@ export const logger = {
         console.log(`${chalk.green('[ OK ]')} ${message}`)
     },
 
+    init(message) {
+        console.log(`${chalk.white('[INIT]')} ${message}`)
+    },
+
     warn(message) {
         console.log(`${chalk.yellow('[WARN]')} ${message}`)
     },
@@ -37,5 +42,3 @@ export const logger = {
         console.log(chalk.gray('─'.repeat(length)))
     }
 }
-
-// Directory: src/utils/terminal/logger.js

@@ -4,8 +4,6 @@ let client = null;
 
 export function initSend(sock) {
     client = sock;
-
-    logger.success("Sender initialized");
 }
 
 export const send = {

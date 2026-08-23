@@ -23,6 +23,8 @@
         "start": "node index.js"
     },
     "imports": {
+        "#database": "./src/database/index.js",
+        "#command": "./src/command/index.js",
         "#bootstrap": "./src/whatsapp/bootstrap/index.js",
         "#app": "./src/whatsapp/app/index.js",
         "#utils/*": "./src/utils/*/index.js"

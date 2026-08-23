@@ -1,14 +1,21 @@
 // @file src/db/initDb.js
-import chalk from "chalk";
-import { migrate } from "./migrate.js";
+
+import { logger } from "#utils/terminal";
 
 export const initializeDatabase = async () => {
-  try {
-    await migrate();
-    console.log(chalk.green("✔ Database synced with schema"));
-    return { success: true };
-  } catch (error) {
-    console.error(chalk.red("✘ Migration Error:"), error.message);
-    throw error;
-  }
+    try {
+        const { migrate } = await import("./migrate.js");
+
+        await migrate();
+
+        logger.success("Database synced with schema");
+
+        return {
+            success: true
+        };
+    } catch (error) {
+        logger.error(`Migration Error: ${error.message}`);
+
+        throw error;
+    }
 };

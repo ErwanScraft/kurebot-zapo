@@ -1,17 +1,19 @@
+// @file src/command/index.js
+
 import { loadCommands } from "./loader.js";
 import {
     registerCommand,
-    getCommand,
-    hasCommand,
-    getCommands,
-    getCommandCount
+    getCommands
 } from "./registry.js";
-import { executeCommand } from "./executor.js";
-import { resolveCommand } from "./resolver.js";
+import { executeRegisteredCommand } from "./executor.js";
 
 let initialized = false;
 
-export async function loadCommandModules() {
+export {
+    executeRegisteredCommand
+};
+
+export async function initializeCommands() {
     if (initialized) {
         return {
             commands: getCommands(),
@@ -33,21 +35,3 @@ export async function loadCommandModules() {
         results
     };
 }
-
-export async function executeRegisteredCommand(name, context) {
-    const resolved = resolveCommand(name);
-
-    if (!resolved.found) {
-        return false;
-    }
-
-    return executeCommand(resolved.command, context);
-}
-
-export {
-    getCommand,
-    hasCommand,
-    getCommands,
-    getCommandCount,
-    resolveCommand
-};
