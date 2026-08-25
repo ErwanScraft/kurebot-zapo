@@ -1,12 +1,12 @@
 /**
- * Bootstrap WhatsApp Client.
- * Bertanggung jawab untuk membuat dan mengonfigurasi instance WaClient
- * beserta logger internal yang digunakan selama proses koneksi.
+ * Membuat dan mengonfigurasi WhatsApp client.
+ * Menyiapkan media processor dan logger internal
+ * berdasarkan konfigurasi client aplikasi.
  */
 
 import pino from 'pino'
 import { WaClient } from 'zapo-js'
-import { createMediaProcessor } from "@zapo-js/media-utils";
+import { createMediaProcessor } from '@zapo-js/media-utils'
 
 export default function createClient(store) {
     return new WaClient(
@@ -31,9 +31,7 @@ export default function createClient(store) {
             }
         },
         pino({
-            level: client.pino.level
+            level: globalThis.client.pino.level
         })
     )
 }
-
-// Directory : src/whatsapp/bootstrap/client.js
