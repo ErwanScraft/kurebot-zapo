@@ -6,15 +6,24 @@ export function initSend(sock) {
     client = sock;
 }
 
+function ensureClient() {
+    if (client) return;
+
+    const error = new Error("Sender belum diinisialisasi.");
+
+    logger.error(error.message);
+    throw error;
+}
+
 export const send = {
     text(jid, text, options = {}) {
-        if (!client) throw new Error("Sender belum diinisialisasi.");
-        
+        ensureClient();
+
         return client.message.send(jid, text, options);
     },
 
     linkPreview(jid, text, options = {}) {
-        if (!client) throw new Error("Sender belum diinisialisasi.");
+        ensureClient();
 
         return client.message.send(jid, {
             type: "text",
@@ -23,10 +32,10 @@ export const send = {
             ...options
         });
     },
-    
+
     sticker(jid, media, options = {}) {
-        if (!client) throw new Error("Sender belum diinisialisasi.");
-    
+        ensureClient();
+
         return client.message.send(jid, {
             type: "sticker",
             media,
