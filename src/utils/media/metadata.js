@@ -1,21 +1,16 @@
-// @file src/utils/media/metadata.js
+ /**
+ * Sticker Metadata Utility.
+ * Menambahkan metadata EXIF packname, author, dan kategori
+ * ke dalam WebP sticker agar informasi sticker tetap terbawa
+ * saat dikirim melalui WhatsApp.
+ */
 
-import fs from "node:fs";
+import { readFile, writeFile, unlink } from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
 import webp from "node-webpmux";
 import { tmpdir } from "node:os";
 
-/**
- * Menambahkan metadata EXIF pada WebP sticker.
- *
- * @param {Buffer} media Buffer WebP.
- * @param {Object} metadata
- * @param {string} [metadata.packname]
- * @param {string} [metadata.author]
- * @param {string[]} [metadata.categories]
- * @returns {Promise<Buffer>}
- */
 export async function injectStickerMetadata(
     media,
     {
@@ -47,7 +42,7 @@ export async function injectStickerMetadata(
     );
 
     try {
-        fs.writeFileSync(input, media);
+        await writeFile(input, media);
 
         const image = new webp.Image();
 
@@ -89,15 +84,12 @@ export async function injectStickerMetadata(
 
         await image.save(output);
 
-        return fs.readFileSync(output);
+        return await readFile(output);
 
     } finally {
-        if (fs.existsSync(input)) {
-            fs.unlinkSync(input);
-        }
-
-        if (fs.existsSync(output)) {
-            fs.unlinkSync(output);
-        }
+        await Promise.allSettled([
+            unlink(input),
+            unlink(output)
+        ]);
     }
 }

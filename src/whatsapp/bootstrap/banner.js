@@ -16,13 +16,13 @@ export default function banner() {
         gradient: ['cyan', 'blue']
     })
 
-    cfonts.say('WhatsApp Bot Framework', {
+    cfonts.say('Propesional WhatsApp Assistant', {
         font: 'console',
         align: 'center',
         colors: ['white']
     })
 
-    cfonts.say('Modern • Modular • Professional', {
+    cfonts.say('Modular • Efficient • Reliable', {
         font: 'console',
         align: 'center',
         colors: ['gray']

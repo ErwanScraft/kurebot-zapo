@@ -12,6 +12,10 @@ import crypto from "node:crypto";
 
 const execFileAsync = promisify(execFile);
 
+const STICKER_SIZE = 512;
+const VIDEO_DURATION = 6;
+const VIDEO_FPS = 12;
+
 function createTempPath(extension) {
     return join(
         tmpdir(),
@@ -21,8 +25,9 @@ function createTempPath(extension) {
 
 async function createImageSticker(input) {
     return sharp(input)
-        .resize(512, 512, {
+        .resize(STICKER_SIZE, STICKER_SIZE, {
             fit: "contain",
+            withoutEnlargement: true,
             background: {
                 r: 0,
                 g: 0,
@@ -31,7 +36,7 @@ async function createImageSticker(input) {
             }
         })
         .webp({
-            quality: 90
+            quality: 85
         })
         .toBuffer();
 }
@@ -46,9 +51,9 @@ async function createVideoSticker(input) {
         await execFileAsync("ffmpeg", [
             "-y",
             "-i", inputPath,
-            "-t", "6",
+            "-t", String(VIDEO_DURATION),
             "-vf",
-            "fps=15,scale=512:512:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=black@0",
+            `fps=${VIDEO_FPS},scale=${STICKER_SIZE}:${STICKER_SIZE}:force_original_aspect_ratio=decrease,pad=${STICKER_SIZE}:${STICKER_SIZE}:(ow-iw)/2:(oh-ih)/2:color=black@0`,
             "-loop", "0",
             "-an",
             "-c:v", "libwebp",
