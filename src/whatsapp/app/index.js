@@ -5,7 +5,7 @@ import { systemLogger } from "#utils/system";
 import { antiSpam } from "#utils/guard";
 import { executeRegisteredCommand } from "#command";
 
-export async function prosesMessage(client, event) {
+export async function processMessage(client, event) {
     try {
         const m = await message(event);
 

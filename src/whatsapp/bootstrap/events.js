@@ -1,19 +1,11 @@
-import { logger } from "#utils/terminal";
-import { prosesMessage } from "#app";
-
 /**
  * Bootstrap Events.
  * Mendaftarkan seluruh event WhatsApp Client yang diperlukan
  * selama proses autentikasi, koneksi, dan penerimaan pesan.
  */
 
-function extractText(message) {
-    return (
-        message?.conversation ??
-        message?.extendedTextMessage?.text ??
-        ''
-    )
-}
+import { logger } from "#utils/terminal";
+import { processMessage } from "#app";
 
 export default function registerEvents(client, { useQr }) {
     // QR Code
@@ -62,6 +54,6 @@ export default function registerEvents(client, { useQr }) {
 
     // Pesan masuk
     client.on('message', async (event) => {
-        await prosesMessage(client, event)
+        await processMessage(client, event)
     })
 }
