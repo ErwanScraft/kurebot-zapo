@@ -1,4 +1,4 @@
-export function message(event) {
+export function message(client, event) {
     const key = event.key ?? {};
     const attrs = event.rawNode?.attrs ?? {};
 
@@ -24,6 +24,21 @@ export function message(event) {
             null
         );
     }
+    
+    function extractMentionedJid(message) {
+        if (!message) return [];
+
+        return (
+            message.extendedTextMessage?.contextInfo?.mentionedJid ??
+            message.imageMessage?.contextInfo?.mentionedJid ??
+            message.videoMessage?.contextInfo?.mentionedJid ??
+            []
+        );
+    }
+
+    function normalizeJid(jid) {
+        return jid?.replace(/:\d+(?=@)/, "");
+    }
 
     const fullText = extractText(event.message);
     const prefix = ".";
@@ -42,6 +57,34 @@ export function message(event) {
         : [];
         
     const quoted = extractQuoted(event.message);
+    
+    const credentials = client?.getCredentials?.() ?? {};
+
+    const botJid = credentials.meJid ?? "";
+    const botLid = credentials.meLid ?? "";
+    const botNumber = botJid.split("@")[0].split(":")[0];
+
+    const mentionedJid = extractMentionedJid(event.message);
+    const mentions = mentionedJid.map(normalizeJid);
+
+    const sender =
+        key.participant ??
+        attrs.participant ??
+        attrs.from ??
+        key.remoteJid;
+
+    const normalizedSender = normalizeJid(sender);
+    const normalizedSenderPn = normalizeJid(
+        key.participantAlt ??
+        attrs.participant_pn ??
+        attrs.sender_pn
+    );
+
+    const isBot =
+        key.fromMe === true ||
+        normalizedSender === normalizeJid(botJid) ||
+        normalizedSender === normalizeJid(botLid) ||
+        normalizedSenderPn === normalizeJid(botJid);
 
     return {
         id: key.id,
@@ -50,11 +93,13 @@ export function message(event) {
         chat: key.remoteJid,
         chat2: key.remoteJidAlt,
 
-        sender:
-            key.participant ??
-            attrs.participant ??
-            attrs.from ??
-            key.remoteJid,
+        sender,
+        
+        // Bot
+        botNumber,
+        botJid,
+        botLid,
+        isBot,
 
         // Status
         isMe: key.fromMe ?? false,
@@ -77,6 +122,10 @@ export function message(event) {
         command,
         text,
         words,
+        
+        // Mention
+        mentionedJid,
+        mentions,
         
         // Quoted
         quoted,

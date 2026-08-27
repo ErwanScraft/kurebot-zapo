@@ -7,7 +7,7 @@ import { executeRegisteredCommand } from "#command";
 
 export async function processMessage(client, event) {
     try {
-        const m = await message(event);
+        const m = await message(client, event);
 
         await client.message.sendReceipt(event, { type: "read" });
 
