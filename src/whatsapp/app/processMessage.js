@@ -8,6 +8,10 @@ import { executeRegisteredCommand } from "#command";
 export async function processMessage(client, event) {
     try {
         const m = await message(client, event);
+        
+        if (m.isBot && m.command) {
+            return;
+        }
 
         await client.message.sendReceipt(event, { type: "read" });
 
