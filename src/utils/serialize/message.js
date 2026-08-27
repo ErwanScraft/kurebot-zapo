@@ -1,3 +1,11 @@
+/**
+ * Message Serializer.
+ * Menormalisasi event pesan WhatsApp menjadi object message
+ * yang konsisten untuk digunakan oleh processor dan command.
+ *
+ * Mencakup informasi chat, sender, bot identity, mention,
+ * command, quoted message, dan metadata pesan.
+ */
 export function message(client, event) {
     const key = event.key ?? {};
     const attrs = event.rawNode?.attrs ?? {};
@@ -60,9 +68,9 @@ export function message(client, event) {
     
     const credentials = client?.getCredentials?.() ?? {};
 
-    const botJid = credentials.meJid ?? "";
-    const botLid = credentials.meLid ?? "";
-    const botNumber = botJid.split("@")[0].split(":")[0];
+    const botJid = normalizeJid(credentials.meJid) ?? "";
+    const botLid = normalizeJid(credentials.meLid) ?? "";
+    const botNumber = botJid.split("@")[0];
 
     const mentionedJid = extractMentionedJid(event.message);
     const mentions = mentionedJid.map(normalizeJid);
@@ -82,9 +90,13 @@ export function message(client, event) {
 
     const isBot =
         key.fromMe === true ||
-        normalizedSender === normalizeJid(botJid) ||
-        normalizedSender === normalizeJid(botLid) ||
-        normalizedSenderPn === normalizeJid(botJid);
+        normalizedSender === botJid ||
+        normalizedSender === botLid ||
+        normalizedSenderPn === botJid;
+
+    const isBotMentioned =
+        mentions.includes(botJid) ||
+        mentions.includes(botLid);
 
     return {
         id: key.id,
@@ -100,6 +112,7 @@ export function message(client, event) {
         botJid,
         botLid,
         isBot,
+        isBotMentioned,
 
         // Status
         isMe: key.fromMe ?? false,

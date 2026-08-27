@@ -3,15 +3,23 @@ import { detectConversationStarter } from "#utils/message";
 import { message, send } from "#utils/serialize";
 import { systemLogger } from "#utils/system";
 import { antiSpam } from "#utils/guard";
+import {
+    resolveIntent,
+    dispatchIntent
+} from "#utils/intent";
 import { executeRegisteredCommand } from "#command";
 
 export async function processMessage(client, event) {
     try {
         const m = await message(client, event);
-        
+
         if (m.isBot && m.command) {
             return;
         }
+
+        const intent = m.isBotMentioned
+            ? resolveIntent(m.text)
+            : null;
 
         await client.message.sendReceipt(event, { type: "read" });
 
@@ -74,6 +82,18 @@ export async function processMessage(client, event) {
             });
 
             if (executed) {
+                return;
+            }
+        }
+        
+        if (intent) {
+            const dispatched = await dispatchIntent(intent, {
+                main: client,
+                m,
+                send
+            });
+        
+            if (dispatched) {
                 return;
             }
         }
