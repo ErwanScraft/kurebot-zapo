@@ -77,7 +77,7 @@ export default {
             const media = getStickerMedia(m);
 
             if (!media) {
-                return send.sendText(
+                return send.text(
                     "Kirim atau reply gambar/video dengan perintah .sticker"
                 );
             }
@@ -118,7 +118,7 @@ export default {
         } catch (error) {
             logger.error(error);
 
-            return send.sendText(
+            return send.text(
                 "Gagal membuat sticker."
             );
         }
