@@ -12,6 +12,10 @@ import { executeRegisteredCommand } from "#command";
 export async function processMessage(client, event) {
     try {
         const m = await message(client, event);
+        
+        
+        
+        console.log(event)
 
         if (m.isBot && m.command) {
             return;
@@ -65,7 +69,7 @@ export async function processMessage(client, event) {
         }
 
         const guard = antiSpam(m);
-
+        
         if (guard.blocked || guard.spam) {
             if (guard.message) {
                 await send.text(m.chat, guard.message);

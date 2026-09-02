@@ -49,7 +49,7 @@ export function message(client, event) {
     }
 
     const fullText = extractText(event.message);
-    const prefix = ".";
+    const prefix = bot.prefix;
     const hasPrefix = fullText.startsWith(prefix);
 
     const command = hasPrefix

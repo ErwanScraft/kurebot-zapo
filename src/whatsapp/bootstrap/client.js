@@ -31,7 +31,7 @@ export default function createClient(store) {
             }
         },
         pino({
-            level: globalThis.client.pino.level
+            level: globalThis.season.pino.level
         })
     )
 }
