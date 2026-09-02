@@ -1,218 +1,136 @@
-const HTML_PRIMITIVE = "GenAIaeacdsnwHtmlPrimitive";
-const BOT_JID = "867051314767696@bot";
+import crypto from 'node:crypto'
 
-/**
- * Mengunci tinggi WebView HTML.
- */
-function lockHeight(height) {
-    const value = Number(height);
+const HTML_PRIMITIVE = 'GenAIaeacdsnwHtmlPrimitive'
+const BOT_JID = '867051314767696@bot'
 
-    if (!Number.isFinite(value) || value <= 0) {
-        throw new TypeError("height must be a positive number");
-    }
-
-    return `
-        <style>
-            html, body {
-                height: ${value}px !important;
-                min-height: ${value}px !important;
-                max-height: ${value}px !important;
-                overflow: auto !important;
-            }
-        </style>
-    `;
-}
-
-/**
- * Membuat primitive HTML AIRich.
- */
-function createHtmlPrimitive(
-    html,
-    {
-        trustedSources = [],
-        height
-    } = {}
-) {
-    if (typeof html !== "string" || !html.trim()) {
-        throw new TypeError("HTML must be a non-empty string");
-    }
-
-    return {
-        payload:
-            height === undefined
-                ? html
-                : lockHeight(height) + html,
-
-        trusted_sources: trustedSources.map(String),
-
-        __typename: HTML_PRIMITIVE
-    };
-}
-
-/**
- * Membuat satu AIRich section.
- */
-function createHtmlSection(
-    html,
-    options = {}
-) {
-    return {
+export function createRelayMessage({
+  html,
+  botResponseId = crypto.randomUUID(),
+  responseId = crypto.randomUUID(),
+  messageText = '',
+  trustedSources = [],
+  verificationMetadata,
+  botJid = BOT_JID
+}) {
+  const unifiedResponse = {
+    response_id: responseId,
+    sections: [
+      {
         view_model: {
-            primitive: createHtmlPrimitive(html, options)
+          primitive: {
+            __typename: HTML_PRIMITIVE,
+            payload: html,
+            trusted_sources: trustedSources
+          },
+          __typename: 'GenAISingleLayoutViewModel'
         }
-    };
-}
+      }
+    ]
+  }
 
-/**
- * Membuat isi unifiedResponse.
- *
- * Elaina melakukan:
- *
- * JSON UTF-8
- *      ↓
- * Base64
- *      ↓
- * AIRichResponseUnifiedResponse.data
- */
-function encodeUnifiedResponse(
-    html,
-    options = {}
-) {
-    const unifiedResponse = {
-        sections: [
-            createHtmlSection(html, options)
-        ]
-    };
-
-    return Buffer
-        .from(
-            JSON.stringify(unifiedResponse),
-            "utf8"
-        )
-        .toString("base64");
-}
-
-/**
- * Metadata yang digunakan oleh AIRich Elaina.
- */
-function createContextInfo(
-    {
+  return {
+    messageContextInfo: {
+      deviceListMetadata: {},
+      deviceListMetadataVersion: 2,
+      botMetadata: {
+        messageDisclaimerText: '',
         botResponseId,
-        verificationMetadata,
-        contextInfo = {}
-    } = {}
-) {
-    return {
-        forwardingScore: 1,
-        isForwarded: true,
-
-        forwardedAiBotMessageInfo: {
-            botJid: BOT_JID
-        },
-
-        forwardOrigin: 4,
-
-        ...contextInfo,
-
-        ...(botResponseId
-            ? {
-                botResponseId
-            }
-            : {}),
-
         ...(verificationMetadata
-            ? {
-                verificationMetadata
+          ? { verificationMetadata }
+          : {})
+      }
+    },
+
+    botForwardedMessage: {
+      message: {
+        richResponseMessage: {
+          messageType: 1,
+
+          submessages: [
+            {
+              messageType: 2,
+              messageText
             }
-            : {})
-    };
+          ],
+
+          unifiedResponse: {
+            data: Buffer.from(
+              JSON.stringify(unifiedResponse),
+              'utf8'
+            )
+          },
+
+          contextInfo: {
+            forwardingScore: 1,
+            isForwarded: true,
+
+            forwardedAiBotMessageInfo: {
+              botJid
+            },
+
+            forwardOrigin: 4
+          }
+        }
+      }
+    }
+  }
 }
 
 /**
- * Membuat raw Proto.IMessage AIRich.
- */
-export function createHtmlAppMessage(
-    html,
-    {
-        trustedSources = [],
-        height,
-
-        botResponseId,
-        verificationMetadata,
-
-        contextInfo = {},
-
-        submessages = []
-    } = {}
-) {
-    const unifiedResponseData = encodeUnifiedResponse(
-        html,
-        {
-            trustedSources,
-            height
-        }
-    );
-
-    return {
-        botForwardedMessage: {
-            message: {
-                richResponseMessage: {
-                    messageType: 1,
-
-                    submessages,
-
-                    unifiedResponse: {
-                        data: unifiedResponseData
-                    },
-
-                    contextInfo: createContextInfo({
-                        botResponseId,
-                        verificationMetadata,
-                        contextInfo
-                    })
-                }
-            }
-        }
-    };
-}
-
-/**
- * Kirim HTML Mini App native WhatsApp.
+ * Relay native ZapoJS.
  *
- * client.message.send()
- * akan menerima raw Proto.IMessage
- * dan Zapo yang melakukan protobuf encoding.
+ * Tidak memakai Baileys.
+ * Tidak membuat transport sendiri.
+ */
+export async function relayMessage(
+  client,
+  jid,
+  message,
+  options = {}
+) {
+  if (!client?.message?.send) {
+    throw new Error(
+      'ZapoJS client.message.send() tidak tersedia'
+    )
+  }
+
+  return client.message.send(
+    jid,
+    message,
+    options
+  )
+}
+
+/**
+ * Shortcut khusus HTML AI Rich.
  */
 export async function sendHtmlApp(
+  client,
+  jid,
+  {
+    html,
+    messageText = '',
+    trustedSources = [],
+    botResponseId = crypto.randomUUID(),
+    responseId = crypto.randomUUID(),
+    verificationMetadata,
+    botJid = BOT_JID
+  }
+) {
+  const message = createRelayMessage({
+    html,
+    messageText,
+    trustedSources,
+    botResponseId,
+    responseId,
+    verificationMetadata,
+    botJid
+  })
+
+  return relayMessage(
     client,
     jid,
-    html,
-    options = {}
-) {
-    if (!client) {
-        throw new TypeError("client is required");
-    }
-
-    if (!jid || typeof jid !== "string") {
-        throw new TypeError("jid must be a string");
-    }
-
-    const message = createHtmlAppMessage(
-        html,
-        options
-    );
-
-    return client.message.send(
-        jid,
-        message
-    );
+    message,
+    {}
+  )
 }
-
-export {
-    HTML_PRIMITIVE,
-    createHtmlPrimitive,
-    createHtmlSection,
-    encodeUnifiedResponse
-};
-
-export default sendHtmlApp;
