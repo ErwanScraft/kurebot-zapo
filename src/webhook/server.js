@@ -1,7 +1,25 @@
 import http from "node:http";
+import os from "node:os";
 import crypto from "node:crypto";
 
 import { logger } from "#utils/terminal";
+
+function getLocalIp() {
+    const interfaces = os.networkInterfaces();
+
+    for (const addresses of Object.values(interfaces)) {
+        for (const address of addresses ?? []) {
+            if (
+                address.family === "IPv4" &&
+                !address.internal
+            ) {
+                return address.address;
+            }
+        }
+    }
+
+    return "127.0.0.1";
+}
 
 function sendResponse(res, statusCode, body) {
     res.writeHead(statusCode, {
@@ -368,8 +386,15 @@ export function createWebhookServer(
         port,
         host,
         () => {
+            const localIp =
+                getLocalIp();
+    
             logger.success(
-                `[Webhook] Minecraft webhook listening on ${host}:${port}`
+                "[✓] Webhook server started\n" +
+                `    Host: ${host}\n` +
+                `    Port: ${port}\n` +
+                "    Endpoint: /webhook/minecraft\n" +
+                `    Local IP: ${localIp}`
             );
         }
     );
