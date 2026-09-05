@@ -2,6 +2,7 @@ import { logger } from "#utils/terminal";
 import { initSend } from "#utils/serialize";
 import { initializeDatabase } from "#database";
 import { initializeCommands } from "#command";
+import { createWebhookServer } from "#webhook";
 
 import createAppStore from "./store.js";
 import createClient from "./client.js";
@@ -31,12 +32,30 @@ export default async function initialize({ useQr }) {
 
     logger.init("Initialize Sender");
     initSend(client);
-
-    logger.success("Initialize Completed");
-
-    return {
-        store,
-        client,
-        commandSystem
-    };
+    
+    logger.init("Initialize Webhook");
+    
+        const webhookServer =
+            createWebhookServer(
+                globalThis,
+                {
+                    text: (jid, text, options = {}) =>
+                        client.message.send(
+                            jid,
+                            text,
+                            options
+                        )
+                }
+            );
+    
+        logger.success(
+            "Initialize Completed"
+        );
+    
+        return {
+            store,
+            client,
+            commandSystem,
+            webhookServer
+        };
 }

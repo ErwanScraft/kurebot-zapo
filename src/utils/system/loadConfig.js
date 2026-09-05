@@ -126,6 +126,8 @@ export async function loadConfig() {
     const language = loadYaml(languageFile);
 
     Object.assign(globalThis, {
+        config,
+    
         database: config.database,
         mysql_store: config.mysql_store,
         mysql_data: config.mysql_data,
