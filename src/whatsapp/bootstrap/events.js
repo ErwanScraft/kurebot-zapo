@@ -56,4 +56,11 @@ export default function registerEvents(client, { useQr }) {
     client.on('message', async (event) => {
         await processMessage(client, event)
     })
+    
+    client.on("message_bot_chunk", async (event) => {
+        console.dir(event, {
+            depth: null,
+            colors: true
+        });
+    });
 }
