@@ -93,29 +93,6 @@ function verifySecret(req, secret) {
     );
 }
 
-function formatPlayerMessage(
-    payload,
-    template
-) {
-    const player =
-        payload?.player?.name ??
-        "Unknown Player";
-
-    const uuid =
-        payload?.player?.uuid ??
-        "Unknown UUID";
-
-    return template
-        .replaceAll(
-            "{player}",
-            player
-        )
-        .replaceAll(
-            "{uuid}",
-            uuid
-        );
-}
-
 async function handleRequest(
     req,
     res,
@@ -212,43 +189,23 @@ async function handleRequest(
     const event =
         payload.event;
 
-    const eventConfig = webhook.events?.[event];
+    const message =
+        typeof payload.message === "string"
+            ? payload.message.trim()
+            : "";
 
-    if (eventConfig === false) {
-        sendResponse(
-            res,
-            200,
-            {
-                success: true,
-                ignored: true,
-                event
-            }
-        );
-
-        return;
-    }
-
-    const template =
-        webhook.messages?.[event];
-
-    if (!template) {
+    if (!message) {
         sendResponse(
             res,
             400,
             {
                 success: false,
-                error: `No message template configured for event: ${event}`
+                error: "Webhook payload is missing message"
             }
         );
 
         return;
     }
-
-    const message =
-        formatPlayerMessage(
-            payload,
-            template
-        );
 
     const targets =
         Array.isArray(webhook.targets)
