@@ -86,10 +86,16 @@ webhook:
       - "your-whatsapp-group-jid@g.us"
 
     events:
+      # Player lifecycle events.
       "player.join": true
+      "player.first_join": true
+      "player.leave": true
 
     messages:
-      "player.join": "🟢 {player} *Joined Server*"
+      # Message templates for player lifecycle events.
+      "player.join": "🟢 {player} joined the server."
+      "player.first_join": "🎉 {player} joined the server for the first time."
+      "player.leave": "🔴 {player} left the server."
 
 # ==================================================
 # Versi Konfigurasi (Jangan Diubah)

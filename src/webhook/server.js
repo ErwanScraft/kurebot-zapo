@@ -93,7 +93,7 @@ function verifySecret(req, secret) {
     );
 }
 
-function formatPlayerJoinMessage(
+function formatPlayerMessage(
     payload,
     template
 ) {
@@ -212,110 +212,110 @@ async function handleRequest(
     const event =
         payload.event;
 
-    if (event === "player.join") {
-        if (
-            webhook.events?.["player.join"] === false
-        ) {
-            sendResponse(
-                res,
-                200,
-                {
-                    success: true,
-                    ignored: true
-                }
-            );
+    const eventConfig = webhook.events?.[event];
 
-            return;
-        }
-
-        const template =
-            webhook.messages?.["player.join"] ??
-            "🟢 *Player Joined*\n\n" +
-            "👤 {player}\n" +
-            "🆔 {uuid}";
-
-        const message =
-            formatPlayerJoinMessage(
-                payload,
-                template
-            );
-
-        const targets =
-            Array.isArray(webhook.targets)
-                ? webhook.targets
-                : [];
-
-        if (targets.length === 0) {
-            logger.warn(
-                "[Webhook] No WhatsApp targets configured."
-            );
-
-            sendResponse(
-                res,
-                500,
-                {
-                    success: false,
-                    error: "No WhatsApp targets configured"
-                }
-            );
-
-            return;
-        }
-
-        const results = [];
-
-        for (const jid of targets) {
-            try {
-                await send.text(
-                    jid,
-                    message
-                );
-
-                results.push({
-                    jid,
-                    success: true
-                });
-            } catch (error) {
-                logger.error(
-                    `[Webhook] Failed to send to ${jid}:`,
-                    error
-                );
-
-                results.push({
-                    jid,
-                    success: false
-                });
-            }
-        }
-
-        logger.info(
-            `[Webhook] player.join received: ${
-                payload.player?.name ??
-                "Unknown Player"
-            }`
-        );
-
+    if (eventConfig === false) {
         sendResponse(
             res,
             200,
             {
                 success: true,
-                event,
-                sent: results
+                ignored: true,
+                event
             }
         );
 
         return;
     }
 
+    const template =
+        webhook.messages?.[event];
+
+    if (!template) {
+        sendResponse(
+            res,
+            400,
+            {
+                success: false,
+                error: `No message template configured for event: ${event}`
+            }
+        );
+
+        return;
+    }
+
+    const message =
+        formatPlayerMessage(
+            payload,
+            template
+        );
+
+    const targets =
+        Array.isArray(webhook.targets)
+            ? webhook.targets
+            : [];
+
+    if (targets.length === 0) {
+        logger.warn(
+            "[Webhook] No WhatsApp targets configured."
+        );
+
+        sendResponse(
+            res,
+            500,
+            {
+                success: false,
+                error: "No WhatsApp targets configured"
+            }
+        );
+
+        return;
+    }
+
+    const results = [];
+
+    for (const jid of targets) {
+        try {
+            await send.text(
+                jid,
+                message
+            );
+
+            results.push({
+                jid,
+                success: true
+            });
+        } catch (error) {
+            logger.error(
+                `[Webhook] Failed to send to ${jid}:`,
+                error
+            );
+
+            results.push({
+                jid,
+                success: false
+            });
+        }
+    }
+
+    logger.info(
+        `[Webhook] ${event} received: ${
+            payload.player?.name ??
+            "Unknown Player"
+        }`
+    );
+
     sendResponse(
         res,
-        400,
+        200,
         {
-            success: false,
-            error: `Unsupported event: ${event ?? "unknown"}`
+            success: true,
+            event,
+            sent: results
         }
     );
+
+    return;
 }
 
 export function createWebhookServer(
