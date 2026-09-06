@@ -26,9 +26,7 @@ function sendResponse(res, statusCode, body) {
         "Content-Type": "application/json; charset=utf-8"
     });
 
-    res.end(
-        JSON.stringify(body)
-    );
+    res.end(JSON.stringify(body));
 }
 
 function readBody(req) {
@@ -143,9 +141,7 @@ async function handleRequest(
     const webhook =
         config.webhook?.minecraft;
 
-    if (
-        !webhook?.enabled
-    ) {
+    if (!webhook?.enabled) {
         sendResponse(
             res,
             404,
@@ -216,11 +212,9 @@ async function handleRequest(
     const event =
         payload.event;
 
-    if (
-        event === "player_join"
-    ) {
+    if (event === "player.join") {
         if (
-            webhook.events?.player_join === false
+            webhook.events?.["player.join"] === false
         ) {
             sendResponse(
                 res,
@@ -235,7 +229,7 @@ async function handleRequest(
         }
 
         const template =
-            webhook.messages?.player_join ??
+            webhook.messages?.["player.join"] ??
             "🟢 *Player Joined*\n\n" +
             "👤 {player}\n" +
             "🆔 {uuid}";
@@ -251,9 +245,7 @@ async function handleRequest(
                 ? webhook.targets
                 : [];
 
-        if (
-            targets.length === 0
-        ) {
+        if (targets.length === 0) {
             logger.warn(
                 "[Webhook] No WhatsApp targets configured."
             );
@@ -272,9 +264,7 @@ async function handleRequest(
 
         const results = [];
 
-        for (
-            const jid of targets
-        ) {
+        for (const jid of targets) {
             try {
                 await send.text(
                     jid,
@@ -299,7 +289,7 @@ async function handleRequest(
         }
 
         logger.info(
-            `[Webhook] player_join received: ${
+            `[Webhook] player.join received: ${
                 payload.player?.name ??
                 "Unknown Player"
             }`
@@ -335,9 +325,7 @@ export function createWebhookServer(
     const webhook =
         config.webhook?.minecraft;
 
-    if (
-        !webhook?.enabled
-    ) {
+    if (!webhook?.enabled) {
         logger.info(
             "[Webhook] Minecraft webhook disabled."
         );
@@ -388,7 +376,7 @@ export function createWebhookServer(
         () => {
             const localIp =
                 getLocalIp();
-    
+
             logger.success(
                 "[✓] Webhook server started\n" +
                 `    Host: ${host}\n` +
