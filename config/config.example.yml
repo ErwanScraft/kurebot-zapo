@@ -12,7 +12,8 @@
 # dirancang untuk kebutuhan komunitas, utilitas,
 # downloader media, dan berbagai fitur otomatisasi.
 #
-# Ubah file ini menjadi config.yml sebelum menjalankan bot.
+# Copy this file to config.yml and replace
+# all template values with your actual configuration.
 #
 # ==================================================
 
@@ -32,24 +33,63 @@ database:
   type: "mysql"
 
 mysql_store:
-  host: "localhost"
+  host: "your-database-host"
   port: 3306
-  database: "database_name"
-  username: "database_user"
-  password: "database_password"
-  timezone: "+07:00"
+  database: "your-store-database"
+  username: "your-database-username"
+  password: "your-database-password"
+  timezone: "your-timezone"
   pool:
     connection_limit: 10
-    
+
 mysql_data:
-  host: "localhost"
+  host: "your-database-host"
   port: 3306
-  database: "database_name"
-  username: "database_user"
-  password: "database_password"
-  timezone: "+07:00"
+  database: "your-data-database"
+  username: "your-database-username"
+  password: "your-database-password"
+  timezone: "your-timezone"
   pool:
     connection_limit: 10
+
+# ==================================================
+# BOT Configuration
+# ==================================================
+
+bot:
+  prefix: "."
+
+# ==================================================
+# SEASON Configuration
+# ==================================================
+
+season:
+  pino:
+    level: "silent"
+
+# ==================================================
+# Minecraft Webhook
+# ==================================================
+
+webhook:
+  minecraft:
+    enabled: false
+    host: "0.0.0.0"
+    port: 8018
+
+    # Must match the webhook secret configured
+    # on the Minecraft plugin.
+    secret: "your-webhook-secret"
+
+    # WhatsApp JIDs that receive Minecraft events.
+    targets:
+      - "your-whatsapp-group-jid@g.us"
+
+    events:
+      "player.join": true
+
+    messages:
+      "player.join": "🟢 {player} *Joined Server*"
 
 # ==================================================
 # Versi Konfigurasi (Jangan Diubah)
