@@ -35,18 +35,20 @@ export default {
             );
         }
 
-        const result = await sendChat(message);
+        const sender = m.pushName?.trim() || "Unknown";
 
+        const result = await sendChat(sender, message);
+        
         if (!result.success) {
             return send.text(
                 m.chat,
                 `❌ ${result.error}`
             );
         }
-
+        
         return send.text(
             m.chat,
-            "✅ Pesan berhasil dikirim ke server."
+            result.message || "Pesan berhasil dikirim ke server."
         );
     }
 };

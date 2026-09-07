@@ -98,8 +98,9 @@ async function request(action, data = {}) {
     }
 }
 
-export async function sendChat(message) {
+export async function sendChat(sender, message) {
     return request("chat", {
+        sender,
         message
     });
 }
