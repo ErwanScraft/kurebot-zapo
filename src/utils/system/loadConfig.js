@@ -138,6 +138,7 @@ export async function loadConfig() {
         bot: config.bot,
         price: config.price,
         sticker: config.sticker,
+        serverbridge: config.serverbridge,
         webhook: config.webhook,
         lang: language
     });

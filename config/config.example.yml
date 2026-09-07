@@ -86,6 +86,23 @@ webhook:
       - "your-whatsapp-group-jid@g.us"
 
 # ==================================================
+# ServerBridge Configuration
+# ==================================================
+
+serverbridge:
+  # Enable KureBot -> ServerBridge communication.
+  enabled: false
+
+  # ServerBridge inbound API endpoint.
+  url: "http://127.0.0.1:8765/api/v1"
+
+  # Must match ServerBridge secret.key.
+  secret: ""
+
+  # HTTP request timeout in milliseconds.
+  timeout: 10000
+  
+# ==================================================
 # Versi Konfigurasi (Jangan Diubah)
 # ==================================================
 
