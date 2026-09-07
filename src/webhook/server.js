@@ -233,11 +233,19 @@ async function handleRequest(
 
     for (const jid of targets) {
         try {
-            await send.text(
+            logger.info(
+                `[Webhook] Sending to ${jid}...`
+            );
+    
+            const result = await send.text(
                 jid,
                 message
             );
-
+    
+            logger.info(
+                `[Webhook] Send resolved for ${jid}: ${JSON.stringify(result)}`
+            );
+    
             results.push({
                 jid,
                 success: true
