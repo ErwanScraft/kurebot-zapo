@@ -68,14 +68,16 @@ export async function processMessage(client, event) {
             console.log(chalk.gray("│"));
         }
 
-        const guard = antiSpam(m);
+        if (m.command) {
+            const guard = antiSpam(m);
         
-        if (guard.blocked || guard.spam) {
-            if (guard.message) {
-                await send.text(m.chat, guard.message);
+            if (guard.blocked || guard.spam) {
+                if (guard.message) {
+                    await send.text(m.chat, guard.message);
+                }
+        
+                return;
             }
-
-            return;
         }
 
         if (m.command) {
