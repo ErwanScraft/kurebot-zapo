@@ -26,7 +26,7 @@ export default {
     },
 
     async run({ m, send }) {
-        const command = m.args?.join(" ").trim();
+        const command = m.words;
 
         if (!command) {
             return send.text(

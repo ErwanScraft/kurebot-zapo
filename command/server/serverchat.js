@@ -26,7 +26,7 @@ export default {
     },
 
     async run({ m, send }) {
-        const message = m.args?.join(" ").trim();
+        const message = m.text;
 
         if (!message) {
             return send.text(
